@@ -71,13 +71,13 @@ input[type="range"]::-webkit-slider-thumb {
                 <div class="relative z-10 h-2">
                     <div class="absolute z-10 left-0 right-0 bottom-0 top-0 rounded-md bg-gray-200"></div>
 
-                    <div class="absolute z-20 top-0 bottom-0 rounded-md bg-green-300" :style="'right:' + maxThumb + '%; left:' + minThumb + '%'"></div>
+                    <div class="absolute z-20 top-0 bottom-0 rounded-md bg-blue-500" :style="'right:' + maxThumb + '%; left:' + minThumb + '%'"></div>
 
-                    <div class="absolute z-30 w-6 h-6 top-0 left-0 bg-green-300 rounded-full -mt-2 -ml-1" :style="'right:' + maxThumb + '%; left:' + minThumb + '%'">
+                    <div class="absolute z-30 w-6 h-6 top-0 left-0 bg-blue-500 rounded-full -mt-2 -ml-1" :style="'right:' + maxThumb + '%; left:' + minThumb + '%'">
                         <span class="absolute z-10 text-center bottom-8 w-max bg-white px-1 rounded right-1/2 translate-x-1/2">{{ labels[0] }}</span>
                     </div>
 
-                    <div class="absolute z-30 w-6 h-6 top-0 right-0 bg-green-300 rounded-full -mt-2 -mr-3" :style="'right: ' + maxThumb + '%'">
+                    <div class="absolute z-30 w-6 h-6 top-0 right-0 bg-blue-500 rounded-full -mt-2 -mr-3" :style="'right: ' + maxThumb + '%'">
                         <span class="absolute z-10 text-center bottom-8 w-max bg-white px-1 rounded right-1/2 translate-x-1/2">{{ labels[1] }}</span>
                     </div>
                 </div>
