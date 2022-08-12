@@ -14,28 +14,26 @@ const { min, max, steps, labels } = toRefs(props) as {
     labels: Ref<string[]>;
 };
 
-const inputValues = {
-    min: ref(min.value + steps.value),
-    max: ref(max.value - steps.value),
-};
+const minValue = ref(min.value + steps.value);
+const maxValue = ref(max.value - steps.value);
 const minThumb = ref(0);
 const maxThumb = ref(0);
 
 const changeValue = (input: "minValue" | "maxValue") => {
     if (input === "minValue") {
-        if (inputValues.min.value < min.value) {
-            inputValues.min.value = min.value;
+        if (minValue.value < min.value) {
+            minValue.value = min.value;
         } else {
-            inputValues.min.value = Math.min(inputValues.min.value, inputValues.max.value - steps.value);
+            minValue.value = Math.min(minValue.value, maxValue.value - steps.value);
         }
-        minThumb.value = ((inputValues.min.value - min.value) / (max.value - min.value)) * 100;
+        minThumb.value = ((minValue.value - min.value) / (max.value - min.value)) * 100;
     } else if (input === "maxValue") {
-        if (inputValues.max.value > max.value) {
-            inputValues.max.value = max.value;
+        if (maxValue.value > max.value) {
+            maxValue.value = max.value;
         } else {
-            inputValues.max.value = Math.max(inputValues.max.value, inputValues.min.value + steps.value);
+            maxValue.value = Math.max(maxValue.value, minValue.value + steps.value);
         }
-        maxThumb.value = 100 - ((inputValues.max.value - min.value) / (max.value - min.value)) * 100;
+        maxThumb.value = 100 - ((maxValue.value - min.value) / (max.value - min.value)) * 100;
     }
 };
 changeValue("minValue");
@@ -56,7 +54,7 @@ input[type="range"]::-webkit-slider-thumb {
                     :min="min"
                     :max="max"
                     @input="changeValue('minValue')"
-                    v-model="inputValues.min"
+                    v-model="minValue"
                     class="absolute pointer-events-none appearance-none z-20 h-2 w-full opacity-0 cursor-pointer"
                 />
 
@@ -66,7 +64,7 @@ input[type="range"]::-webkit-slider-thumb {
                     :min="min"
                     :max="max"
                     @input="changeValue('maxValue')"
-                    v-model="inputValues.max"
+                    v-model="maxValue"
                     class="absolute pointer-events-none appearance-none z-20 h-2 w-full opacity-0 cursor-pointer"
                 />
 
@@ -87,26 +85,10 @@ input[type="range"]::-webkit-slider-thumb {
 
             <div class="flex justify-between items-center py-5">
                 <div>
-                    <input
-                        @input="changeValue('minValue')"
-                        v-model="inputValues.min"
-                        type="number"
-                        :step="steps"
-                        :min="min"
-                        :max="max"
-                        class="px-3 py-2 border border-gray-200 rounded w-24 text-center"
-                    />
+                    <input @input="changeValue('minValue')" v-model="minValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
                 </div>
                 <div>
-                    <input
-                        @input="changeValue('maxValue')"
-                        v-model="inputValues['max']"
-                        type="number"
-                        :step="steps"
-                        :min="min"
-                        :max="max"
-                        class="px-3 py-2 border border-gray-200 rounded w-24 text-center"
-                    />
+                    <input @input="changeValue('maxValue')" v-model="maxValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
                 </div>
             </div>
         </div>
