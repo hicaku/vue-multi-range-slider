@@ -4,18 +4,23 @@ import { ref, toRefs, type Ref } from "vue";
 const props = defineProps({
     min: Number,
     max: Number,
+    range: Array,
     steps: Number,
     labels: Array,
 });
-const { min, max, steps, labels } = toRefs(props) as {
+
+const emits = defineEmits(["changeValue"]);
+
+const { min, max, range, steps, labels } = toRefs(props) as {
     min: Ref<number>;
     max: Ref<number>;
+    range: Ref<[number, number]>;
     steps: Ref<number>;
     labels: Ref<string[]>;
 };
 
-const minValue = ref(min.value + steps.value);
-const maxValue = ref(max.value - steps.value);
+const minValue = ref(range.value[0]);
+const maxValue = ref(range.value[1]);
 const minThumb = ref(0);
 const maxThumb = ref(0);
 
@@ -35,6 +40,7 @@ const changeValue = (input: "minValue" | "maxValue") => {
         }
         maxThumb.value = 100 - ((maxValue.value - min.value) / (max.value - min.value)) * 100;
     }
+    emits("changeValue", [minValue.value, maxValue.value]);
 };
 changeValue("minValue");
 changeValue("maxValue");
