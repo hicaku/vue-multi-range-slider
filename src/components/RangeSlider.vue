@@ -4,46 +4,57 @@ import { ref, toRefs, type Ref } from "vue";
 const props = defineProps({
     min: Number,
     max: Number,
-    range: Array,
+    modelValue: Array,
     steps: Number,
     labels: Array,
 });
+const emits = defineEmits(["update:modelValue", "changeValue"]);
 
-const emits = defineEmits(["changeValue"]);
-
-const { min, max, range, steps, labels } = toRefs(props) as {
+const { min, max, modelValue, steps, labels } = toRefs(props) as {
     min: Ref<number>;
     max: Ref<number>;
-    range: Ref<[number, number]>;
+    modelValue: Ref<[number, number]>;
     steps: Ref<number>;
     labels: Ref<string[]>;
 };
 
-const minValue = ref(range.value[0]);
-const maxValue = ref(range.value[1]);
+const minValue = ref(modelValue.value[0]);
+const maxValue = ref(modelValue.value[1]);
 const minThumb = ref(0);
 const maxThumb = ref(0);
 
-const changeValue = (input: "minValue" | "maxValue") => {
-    if (input === "minValue") {
-        if (minValue.value < min.value) {
-            minValue.value = min.value;
-        } else {
-            minValue.value = Math.min(minValue.value, maxValue.value - steps.value);
-        }
-        minThumb.value = ((minValue.value - min.value) / (max.value - min.value)) * 100;
+const changeValues = (input: "initial" | "minValue" | "maxValue") => {
+    if (input === "initial") {
+        updateMinValue();
+        updateMaxValue();
+    } else if (input === "minValue") {
+        updateMinValue();
     } else if (input === "maxValue") {
-        if (maxValue.value > max.value) {
-            maxValue.value = max.value;
-        } else {
-            maxValue.value = Math.max(maxValue.value, minValue.value + steps.value);
-        }
-        maxThumb.value = 100 - ((maxValue.value - min.value) / (max.value - min.value)) * 100;
+        updateMaxValue();
     }
-    emits("changeValue", [minValue.value, maxValue.value]);
+    if (input !== "initial") {
+        emits("update:modelValue", [minValue.value, maxValue.value]);
+        emits("changeValue", [minValue.value, maxValue.value]);
+    }
 };
-changeValue("minValue");
-changeValue("maxValue");
+
+const updateMinValue = () => {
+    if (minValue.value < min.value) {
+        minValue.value = min.value;
+    } else {
+        minValue.value = Math.min(minValue.value, maxValue.value - steps.value);
+    }
+    minThumb.value = ((minValue.value - min.value) / (max.value - min.value)) * 100;
+};
+const updateMaxValue = () => {
+    if (maxValue.value > max.value) {
+        maxValue.value = max.value;
+    } else {
+        maxValue.value = Math.max(maxValue.value, minValue.value + steps.value);
+    }
+    maxThumb.value = 100 - ((maxValue.value - min.value) / (max.value - min.value)) * 100;
+};
+changeValues("initial");
 </script>
 <style>
 input[type="range"]::-webkit-slider-thumb {
@@ -59,7 +70,7 @@ input[type="range"]::-webkit-slider-thumb {
                     :step="steps"
                     :min="min"
                     :max="max"
-                    @input="changeValue('minValue')"
+                    @input="changeValues('minValue')"
                     v-model="minValue"
                     class="absolute pointer-events-none appearance-none z-20 h-2 w-full opacity-0 cursor-pointer"
                 />
@@ -69,7 +80,7 @@ input[type="range"]::-webkit-slider-thumb {
                     :step="steps"
                     :min="min"
                     :max="max"
-                    @input="changeValue('maxValue')"
+                    @input="changeValues('maxValue')"
                     v-model="maxValue"
                     class="absolute pointer-events-none appearance-none z-20 h-2 w-full opacity-0 cursor-pointer"
                 />
@@ -91,10 +102,10 @@ input[type="range"]::-webkit-slider-thumb {
 
             <div class="flex justify-between items-center py-5">
                 <div>
-                    <input @input="changeValue('minValue')" v-model="minValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
+                    <input @input="changeValues('minValue')" v-model="minValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
                 </div>
                 <div>
-                    <input @input="changeValue('maxValue')" v-model="maxValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
+                    <input @input="changeValues('maxValue')" v-model="maxValue" type="number" :step="steps" :min="min" :max="max" class="px-3 py-2 border border-gray-200 rounded w-24 text-center" />
                 </div>
             </div>
         </div>
